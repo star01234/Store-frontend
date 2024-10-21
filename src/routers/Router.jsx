@@ -5,7 +5,7 @@ import About from "../pages/About";
 import Contact from "../pages/Contact";
 import Services from "../pages/Services";
 import Navbar from '../components/Navbar';
-import login from '../components/Login';
+import Login from '../components/Login';
 
 const AppRoutes = () => {
   return (
@@ -17,7 +17,7 @@ const AppRoutes = () => {
           <Route path="/about" element={<About />} />
           <Route path="/services" element={<Services />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/login" element={<Contact />} />
+          <Route path="/login" element={<Login />} />
         </Routes>
       </div>
     </Router>

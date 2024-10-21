@@ -8,7 +8,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault(); 
 
    
     if (email === "user@example.com" && password === "password") {
