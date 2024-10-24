@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'; 
-import axios from 'axios'; 
-import Swal from 'sweetalert2'; 
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Swal from "sweetalert2";
 import HeaderComponent from "../components/Header";
 import ButtonComponent from "../components/Button";
 import MapComponent from "../components/Map";
@@ -61,6 +61,24 @@ const Home = () => {
     }
   };
 
+  // Add the calculateDistance function here
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const toRad = (value) => (value * Math.PI) / 180;
+    const R = 6371; // Radius of the Earth in km
+
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRad(lat1)) *
+        Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // Distance in km
+  };
+
   const handleEdit = (storeId) => {
     // Add your edit logic here
     console.log("Edit store with ID:", storeId);
@@ -69,25 +87,27 @@ const Home = () => {
 
   const handleDelete = async (storeId) => {
     const result = await Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "You won't be able to revert this!",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!',
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
     });
 
     if (result.isConfirmed) {
       try {
-        const response = await axios.delete(`${base_url}/api/v1/stores/${storeId}`);
+        const response = await axios.delete(
+          `${base_url}/api/v1/stores/${storeId}`
+        );
         if (response.status === 200) {
-          Swal.fire('Deleted!', 'Your store has been deleted.', 'success');
-          setStores(stores.filter(store => store.id !== storeId)); // Remove store from local state
+          Swal.fire("Deleted!", "Your store has been deleted.", "success");
+          setStores(stores.filter((store) => store.id !== storeId)); // Remove store from local state
         }
       } catch (error) {
         console.error("Error deleting store:", error);
-        Swal.fire('Error!', 'There was a problem deleting the store.', 'error');
+        Swal.fire("Error!", "There was a problem deleting the store.", "error");
       }
     }
   };
@@ -113,7 +133,12 @@ const Home = () => {
       return;
     }
 
-    const distance = calculateDistance(myLocation.lat, myLocation.lng, selectedStore.lat, selectedStore.lng);
+    const distance = calculateDistance(
+      myLocation.lat,
+      myLocation.lng,
+      selectedStore.lat,
+      selectedStore.lng
+    );
 
     if (distance <= deliveryZone.radius) {
       Swal.fire({
@@ -135,9 +160,9 @@ const Home = () => {
   return (
     <div className="p-4">
       <HeaderComponent />
-      <ButtonComponent 
-        onGetLocation={handlerGetLocation} 
-        onCheckDelivery={handleLocationCheck} 
+      <ButtonComponent
+        onGetLocation={handlerGetLocation}
+        onCheckDelivery={handleLocationCheck}
       />
       <div className="flex-1 mt-4 md:mt-8">
         <div className="border border-gray-300 rounded-lg shadow-md overflow-hidden">

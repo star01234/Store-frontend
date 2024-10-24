@@ -21,7 +21,7 @@ const Navbar = () => {
           STORE DELIVERY ZONE
         </a>
       </div>
-  
+
       {/* Mobile Menu Toggle Button */}
       <div className="flex-none md:hidden">
         <button
@@ -43,7 +43,7 @@ const Navbar = () => {
           </svg>
         </button>
       </div>
-  
+
       {/* Desktop Menu */}
       <div className="flex-none hidden md:flex items-center space-x-4">
         <ul className="menu menu-horizontal p-0">
@@ -53,22 +53,12 @@ const Navbar = () => {
             </a>
           </li>
           <li>
-            <a href="/about" className="text-white hover:text-blue-200">
-              About
-            </a>
-          </li>
-          <li>
-            <a href="/services" className="text-white hover:text-blue-200">
-              Services
-            </a>
-          </li>
-          <li>
             <a href="/Add" className="text-white hover:text-blue-200">
               Add
             </a>
           </li>
         </ul>
-  
+
         {userName ? (
           <div className="flex items-center space-x-2">
             <span className="text-white bg-blue-900 px-3 py-1 rounded">
@@ -95,7 +85,7 @@ const Navbar = () => {
           </>
         )}
       </div>
-  
+
       {/* Mobile Menu */}
       {isOpen && (
         <div className="absolute top-14 right-0 z-10 bg-blue-600 shadow-md rounded-lg md:hidden">
@@ -103,16 +93,6 @@ const Navbar = () => {
             <li>
               <a href="/" className="block text-white hover:text-blue-200">
                 Home
-              </a>
-            </li>
-            <li>
-              <a href="/about" className="block text-white hover:text-blue-200">
-                About
-              </a>
-            </li>
-            <li>
-              <a href="/services" className="block text-white hover:text-blue-200">
-                Services
               </a>
             </li>
             <li>
@@ -138,12 +118,18 @@ const Navbar = () => {
             ) : (
               <>
                 <li>
-                  <a href="/login" className="block text-white hover:text-blue-200">
+                  <a
+                    href="/login"
+                    className="block text-white hover:text-blue-200"
+                  >
                     Login
                   </a>
                 </li>
                 <li>
-                  <a href="/register" className="block text-white hover:text-blue-200">
+                  <a
+                    href="/register"
+                    className="block text-white hover:text-blue-200"
+                  >
                     Register
                   </a>
                 </li>
@@ -153,8 +139,7 @@ const Navbar = () => {
         </div>
       )}
     </div>
-  )
+  );
 };
-  
 
 export default Navbar;

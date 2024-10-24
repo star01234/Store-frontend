@@ -1,82 +1,63 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../context/AuthContext"; // Ensure you have this context
+import StoreService from "../services/store.service"; // Import your service
 
 const AddStore = () => {
-  const [name, setName] = useState("");
-  const [address, setAddress] = useState("");
-  const [lat, setLat] = useState("");
-  const [lng, setLng] = useState("");
-  const [radius, setRadius] = useState("");
-  const [adminId, setAdminId] = useState("");
   const navigate = useNavigate();
+  const { user } = useAuthContext();
 
-  useEffect(() => {
-    const checkUserRole = () => {
-      const userRole = localStorage.getItem("userRole");
-      console.log("User Role:", userRole);
+  const [store, setStore] = useState({
+    name: "",
+    address: "",
+    lat: "",
+    lng: "",
+    radius: "",
+    adminId: user?.id || "",
+  });
 
-      if (userRole === "ROLES_ADMIN") {
-        const user = JSON.parse(localStorage.getItem("user"));
-        if (user && user.id) {
-          setAdminId(user.id); 
-          console.log("Admin ID:", user.id);
-        } else {
-          console.error("User data not found in localStorage or missing ID");
-        }
-      } else {
-        Swal.fire({
-          title: "You have no right",
-          text: "You must be an administrator to access this page",
-          icon: "warning",
-          confirmButtonText: "ตกลง",
-        }).then(() => {
-          navigate("/home");
-        });
-      }
-    };
+  const [error, setError] = useState("");
+  console.log(user);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setStore((prevStore) => ({
+      ...prevStore,
+      [name]: value,
+    }));
+  };
 
-    checkUserRole();
-  }, [navigate]);
-
-  // handleSubmit จัดการข้อมูลการส่งฟอร์ม
   const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      // Validate input fields
+      for (const key in store) {
+        if (!store[key]) {
+          throw new Error(`${key} is required`);
+        }
+      }
 
-    if (!name || !adminId || !address || !lat || !lng || !radius) {
+      await StoreService.insertStore(store);
+
+      await Swal.fire({
+        title: "Success!",
+        text: "Store added successfully.",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+
+      navigate("/");
+    } catch (error) {
+      console.error("Error adding store:", error);
+      setError(error.message || "Error adding store. Please try again.");
+
+      // Show error alert
       Swal.fire({
         title: "Error!",
-        text: "All fields (name, adminId, address, lat, lng, radius) must be provided!",
+        text: error.message || "Failed to add store. Please try again.",
         icon: "error",
         confirmButtonText: "OK",
       });
-      return; 
-    }
-
-    const storeData = {
-      name,
-      adminId,
-      address,
-      lat,  
-      lng,  
-      radius, 
-    };
-
-    console.log("Data to be sent:", storeData); 
-
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}${import.meta.env.VITE_RESTO_API}`,
-        storeData
-      );
-
-      console.log(response.data);
-      Swal.fire("Success!", "Store added successfully!", "success");
-      navigate("/home"); // เปลี่ยนหน้าเมื่อสำเร็จ
-    } catch (error) {
-      console.error("Error adding store:", error.response ? error.response.data : error.message);
-      Swal.fire("Error!", error.response ? error.response.data.message : "Failed to add store!", "error");
     }
   };
 
@@ -93,20 +74,9 @@ const AddStore = () => {
           </label>
           <input
             type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="shadow-xl input border rounded-lg p-3 w-full focus:outline-none focus:ring focus:ring-purple-500"
-            required
-          />
-        </div>
-        <div>
-          <label className="block mb-2 text-sm font-medium text-gray-700">
-            Admin ID
-          </label>
-          <input
-            type="text"
-            value={adminId}
-            onChange={(e) => setAdminId(e.target.value)}
+            name="name"
+            value={store.name}
+            onChange={handleChange}
             className="shadow-xl input border rounded-lg p-3 w-full focus:outline-none focus:ring focus:ring-purple-500"
             required
           />
@@ -117,8 +87,9 @@ const AddStore = () => {
           </label>
           <input
             type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
+            name="address"
+            value={store.address}
+            onChange={handleChange}
             className="shadow-xl input border rounded-lg p-3 w-full focus:outline-none focus:ring focus:ring-purple-500"
             required
           />
@@ -128,9 +99,10 @@ const AddStore = () => {
             Latitude
           </label>
           <input
-            type="text"
-            value={lat}
-            onChange={(e) => setLat(e.target.value)}
+            type="number"
+            name="lat"
+            value={store.lat}
+            onChange={handleChange}
             className="shadow-xl input border rounded-lg p-3 w-full focus:outline-none focus:ring focus:ring-purple-500"
             required
           />
@@ -140,9 +112,10 @@ const AddStore = () => {
             Longitude
           </label>
           <input
-            type="text"
-            value={lng}
-            onChange={(e) => setLng(e.target.value)}
+            type="number"
+            name="lng"
+            value={store.lng}
+            onChange={handleChange}
             className="shadow-xl input border rounded-lg p-3 w-full focus:outline-none focus:ring focus:ring-purple-500"
             required
           />
@@ -152,9 +125,10 @@ const AddStore = () => {
             Radius
           </label>
           <input
-            type="text"
-            value={radius}
-            onChange={(e) => setRadius(e.target.value)}
+            type="number"
+            name="radius"
+            value={store.radius}
+            onChange={handleChange}
             className="shadow-xl input border rounded-lg p-3 w-full focus:outline-none focus:ring focus:ring-purple-500"
           />
         </div>
@@ -164,6 +138,8 @@ const AddStore = () => {
         >
           Add Store
         </button>
+        {error && <p className="text-red-500">{error}</p>}{" "}
+        {/* Show error message if exists */}
       </form>
     </div>
   );

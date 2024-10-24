@@ -1,11 +1,34 @@
-import axios from 'axios';
+import api from "./api";
+import axios from "axios";
+import TokenService from "./token.service";
 
-const API_URL = `${import.meta.env.VITE_API_BASE_URL}${import.meta.env.VITE_AUTH_API}`;
+const API_URL = "/api/auth";
+
+const register = async (username, email, password) => {
+  return await api.post(API_URL + "/signup", { username, email, password });
+};
 
 const login = async (username, password) => {
-    return await axios.post(`${API_URL}/signin`, { username, password });
+  const response = await api.post(API_URL + "/signin", { username, password });
+  if (response.data.accessToken) {
+    localStorage.setItem(
+      "accessToken",
+      JSON.stringify(response.data.accessToken)
+    );
+    localStorage.setItem("user", JSON.stringify(response));
+  }
+  return response;
 };
 
-export default {
-    login,
+const logout = () => {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("user");
 };
+
+const AuthService = {
+  register,
+  login,
+  logout,
+};
+
+export default AuthService;
